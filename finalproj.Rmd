@@ -1,0 +1,105 @@
+---
+title: "FinalProj"
+author: "Nicholas Mitchell"
+date: "4/26/2022"
+output: html_document
+---
+### Working directory and packages
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = 'C:/Users/nmitchell1/Desktop/Classes/Injustice/data/finaldata') 
+library(modelsummary)
+library(ggplot2)
+library(dplyr)
+```
+
+### Read in data
+```{r}
+incomedist<- read.csv("mrc_table2.csv")
+rejectionratedata<- read.csv("mrc_table10.csv")
+```
+
+### Get familiar with the data (for presentation)
+```{r}
+hist(incomedist$par_mean)
+hist(incomedist$par_median)
+hist(incomedist$tier)
+```
+
+### Make dummy variables, join datasets
+```{r}
+incomedist$notincollegeby22 <- ifelse(incomedist$tier == '14', 1, 0)
+incomedist$Ivy <- ifelse(incomedist$tier == '1', 1, 0)
+incomedist$Elite <- ifelse(incomedist$tier == '2', 1, 0)
+incomedist$HighlySelective <- ifelse(incomedist$tier == '3'| 
+                                      incomedist$tier == '4', 1, 0)
+incomedist$Selective <- ifelse(incomedist$tier == '5'| 
+                                      incomedist$tier == '6', 1, 0)
+incomedist$Nonselective <- ifelse(incomedist$tier == '7'| 
+                                      incomedist$tier == '8', 1, 0)
+incomedist$Twoyearorless <- ifelse(incomedist$tier == '9'
+                                   | incomedist$tier == '12',1,0)
+incomedist$Forprofittier <- ifelse(incomedist$tier == '10'| 
+                                      incomedist$tier == '11', 1, 0)
+incomedist$public1 <- ifelse(incomedist$type == '1', 1, 0)
+incomedist$privatenonprof <- ifelse(incomedist$type == '2', 1, 0)
+incomedist$forprofittype <- ifelse(incomedist$type == '3', 1, 0)
+incomedist$fouryear <- ifelse(incomedist$iclevel == '1', 1, 0)
+incomedist$twoyear <- ifelse(incomedist$iclevel == '2', 1, 0)
+incomedist$lessthantwoyear <- ifelse(incomedist$iclevel == '3', 1, 0)
+incomedist1<- left_join(incomedist, rejectionratedata, by="name") 
+```
+
+
+### Tier Regressions
+```{r}
+models_tier <- list()
+models_tier[['meanincomebytier']] <- lm(par_mean ~ Ivy+Elite+HighlySelective+Selective+Nonselective+Twoyearorless+Forprofittier+notincollegeby22, data=incomedist)
+models_tier[['medianincomebytier']] <- lm(par_median ~ Ivy+Elite+HighlySelective+Selective+Nonselective+Twoyearorless+Forprofittier+notincollegeby22, data=incomedist)
+models_tier[['rejectionratebytier']] <- lm(scorecard_rej_rate_2013 ~ Ivy+Elite+HighlySelective+Selective+Nonselective+Twoyearorless+Forprofittier+notincollegeby22, data=incomedist1)
+modelsummary(models_tier, stars = TRUE)
+```
+
+### Type Regressions
+```{r}
+models_type <- list()
+models_type[['meanincomebytype']] <- lm(par_mean ~public1+privatenonprof+forprofittype, data=incomedist)
+models_type[['medianincomebytype']]<- lm(par_median ~public1+privatenonprof+forprofittype, data=incomedist)
+models_type[['rejectionratebytype']] <- lm(scorecard_rej_rate_2013 ~public1+privatenonprof+forprofittype, data=incomedist1)
+modelsummary(models_type, stars=TRUE)
+```
+
+### IC Level Regressions
+```{r}
+models_iclevel <- list()
+models_iclevel[['meanincomebyiclevel']] <- lm(par_mean ~ fouryear+twoyear+Twoyearorless, data=incomedist1)
+models_iclevel[['medianincomebyiclevel']] <- lm(par_median ~ fouryear+twoyear+Twoyearorless, data=incomedist1)
+models_iclevel[['rejectionratebyiclevel']] <- lm(scorecard_rej_rate_2013 ~ fouryear+twoyear+Twoyearorless, data=incomedist1)
+modelsummary(models_iclevel, stars = TRUE)
+```
+
+### Sticker price Regressions
+```{r}
+models_price <- list()
+models_price[['meanincomebystickerprice']] <- lm(par_mean ~ sticker_price_2013, data=incomedist1)
+models_price[['medianincomebystickerprice']] <- lm(par_median ~ sticker_price_2013, data=incomedist1)
+models_price[['stickerpricebyrejectionrate']] <- lm(sticker_price_2013~scorecard_rej_rate_2013, data=incomedist1)
+modelsummary(models_price, stars = TRUE)
+```
+
+### Percentile Regressions
+```{r}
+models_income <- list()
+models_income[['rejectionrateby.1%']] <- lm(scorecard_rej_rate_2013 ~ par_toppt1pc, data=incomedist1)
+models_income[['rejectionrateby1%']] <- lm(scorecard_rej_rate_2013 ~ par_top1pc, data=incomedist1)
+models_income[['rejectionrateby5%']] <- lm(scorecard_rej_rate_2013 ~ par_top5pc, data=incomedist1)
+modelsummary(models_income, stars = TRUE)
+```
+
+### BANG- Mean Income by Rejection Rate
+```{r}
+models_important<- list()
+models_important[['Par_mean']]<- lm(par_mean~ scorecard_rej_rate_2013, data=incomedist1)
+modelsummary(models_important, stars=TRUE)
+```
+
