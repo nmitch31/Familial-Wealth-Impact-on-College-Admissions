@@ -1,1 +1,1 @@
-# Familial-Wealth-s-Impact-on-College-Admissions
+# Familial-Wealth-Impact-on-College-Admissions
