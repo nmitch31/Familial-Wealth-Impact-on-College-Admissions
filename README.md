@@ -10,23 +10,9 @@ Two datasets from Opportunity Insights were used, focusing on students aged 19-2
 Method
 Regression analyses were conducted with independent variables college type, college tier, iclevel (4 year vs 2 year degree), tuition price , and the fraction of parents in the top X% of income distribution. Dependent variables included college’s parental mean income, parental median income, and rejection rate.
 
-# Models
--College Tier Regression
-
--College Type Regression
-
-
--IC Level Regression
-
--Income Percentile Regression
-
--Sticker Price Regression
-
--Parental Mean Income by Rejection Rate Regression
-
-Discussion
+# Discussion
 The results confirmed hypotheses, indicating that higher-income families are correlated with higher chances of admission to prestigious universities. The income percentile regressions emphasized the impact of parental income distributions on rejection rates. Further discussion highlights societal issues, such as unequal access to resources and the need for college admissions process reform.
-Conclusion
+# Conclusion
 The study concludes that wealth and income correlate with university acceptance, emphasizing disparities in the college admissions process. The call for changes in the American education system and admissions process aims to promote integrity and equality.
 
 *** For more in depth analysis and discussion, see the report in this repository.
